@@ -230,3 +230,5 @@ tile_data = PoolIntArray( 65534, 0, 65537, 65535, 0, 65539, 37, 0, 65537, 38, 0,
 script = ExtResource( 2 )
 
 [node name="Pin" parent="." instance=ExtResource( 3 )]
+
+[connection signal="hit_pin" from="Pin" to="." method="_on_Pin_hit_pin"]

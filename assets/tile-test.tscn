@@ -25,5 +25,7 @@ __meta__ = {
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 36, -41 )
 
-[node name="ball" parent="." instance=ExtResource( 3 )]
+[node name="Ball" parent="." instance=ExtResource( 3 )]
 position = Vector2( 55, 28 )
+
+[connection signal="init_level" from="TileMap" to="." method="_on_TileMap_init_level"]

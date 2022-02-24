@@ -24,6 +24,13 @@ onready var extents = get_extents()
 func get_input():
 	var mod = 1
 	var dir = 0
+	
+	var changed_direction = false
+	
+	if Input.is_action_just_pressed("walk_left") and direction == Vector2.RIGHT:
+		changed_direction = true
+	if Input.is_action_just_pressed("walk_right") and direction == Vector2.LEFT:
+		changed_direction = true
 
 	if is_on_floor():
 		jumps = 1
@@ -33,7 +40,6 @@ func get_input():
 			velocity.y = min(max_jumps, velocity.y + (jump_speed * jumps))
 			jumps += 0.5
 
-	var old_direction: Vector2 = direction
 	if Input.is_action_pressed("walk_right"):
 		dir += mod
 		direction = Vector2.RIGHT
@@ -42,7 +48,7 @@ func get_input():
 		dir -= mod
 		direction = Vector2.LEFT
 
-	if dir != 0:
+	if dir != 0 and not changed_direction:
 		velocity.x = lerp(velocity.x, dir * speed, acceleration)
 	else:
 		velocity.x = lerp(velocity.x, 0, friction)

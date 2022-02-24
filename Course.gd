@@ -1,19 +1,24 @@
 extends TileMap
 
-export(int) var level_seed: int = 1
+signal init_level
 
+export(int) var level_seed: int = 0
+export(Vector2) var map_size: Vector2 = Vector2(80, 40)
 
+var level = 0
 onready var map = self
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	init_level()
-
+	
 
 func init_level():
 	var noise = OpenSimplexNoise.new()
 
-	noise.seed = level_seed
+	if level_seed == 0:
+		level_seed = hash(OS.get_date())
+		
+	noise.seed = level_seed + level
 	noise.octaves = 4
 	noise.period = 40
 	noise.persistence = 0.8
@@ -21,7 +26,6 @@ func init_level():
 	map.clear()
 	
 	var cell_size = map.cell_size
-	var map_size = Vector2(80, 40)
 	var map_extents = cell_size * map_size
 	
 	var base_line = 5
@@ -54,3 +58,9 @@ func init_level():
 
 	map.update_dirty_quadrants()
 	map.update_bitmask_region()
+
+
+func _on_Pin_hit_pin():
+	level += 1
+	init_level()
+	emit_signal("init_level")
