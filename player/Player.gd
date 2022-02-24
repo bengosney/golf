@@ -16,13 +16,22 @@ var max_swing_power = 200
 
 var back_swing = 2.35619
 
+var jumps = 1
+var max_jumps = 2
+
+onready var extents = get_extents()
+
 func get_input():
 	var mod = 1
 	var dir = 0
 
 	if is_on_floor():
-		if Input.is_action_pressed("jump"):
-			velocity.y += jump_speed
+		jumps = 1
+
+	if is_on_floor() or jumps < 2:
+		if Input.is_action_just_pressed("jump"):
+			velocity.y = min(max_jumps, velocity.y + (jump_speed * jumps))
+			jumps += 0.5
 
 	var old_direction: Vector2 = direction
 	if Input.is_action_pressed("walk_right"):
@@ -49,9 +58,22 @@ func get_input():
 				
 		swing_power = 0
 
+func get_extents():
+	var min_vec = Vector2.INF
+	var max_vec = Vector2.ZERO
+	
+	for vec in $CollisionPolygon2D.polygon:
+		min_vec.x = min(min_vec.x, vec.x)
+		min_vec.y = min(min_vec.y, vec.y)
+
+		max_vec.x = max(max_vec.x, vec.x)
+		max_vec.y = max(max_vec.y, vec.y)
+
+	return [min_vec, max_vec]
 
 func can_hit(ball: Node2D):
 	var dir = Vector2(ball.position.x - self.position.x, 0).normalized()
+	var extents = get_extents()
 	
 	if dir != self.direction:
 		return false

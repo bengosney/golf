@@ -19,24 +19,26 @@ animations = [ {
 } ]
 
 [node name="Player" type="KinematicBody2D"]
+scale = Vector2( 0.25, 0.25 )
 script = ExtResource( 4 )
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
-polygon = PoolVector2Array( -5, 14, -7, 9, -7, 5, -5, 2, -5, -6, 3, -10, 5, -6, 5, 2, 7, 5, 7, 10, 5, 14 )
-
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
-scale = Vector2( 0.225, 0.255 )
 frames = SubResource( 1 )
 animation = "idle"
 playing = true
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2( 9.83477e-07, 0.395835 )
+scale = Vector2( 4.28571, 3.80208 )
+polygon = PoolVector2Array( -5, 14, -7, 9, -7, 5, -5, 2, -5, -6, 3, -10, 5, -6, 5, 2, 7, 5, 7, 10, 5, 14 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 
 [node name="Club" type="ColorRect" parent="."]
 margin_top = 5.0
-margin_right = 2.0
-margin_bottom = 14.0
+margin_right = 4.0
+margin_bottom = 52.0
 color = Color( 1, 0, 0.937255, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
