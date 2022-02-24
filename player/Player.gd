@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+const NO_MOVE_FOR = 0.05
+
 export(int) var speed = 200
 export(float) var acceleration = 0.5
 export(float) var friction = 0.5
@@ -21,17 +23,24 @@ var max_jumps = 2
 
 onready var extents = get_extents()
 
+var no_move = 0
 
-func get_input():
+func get_input(delta):
 	var mod = 1
 	var dir = 0
+	
+	if Input.is_action_just_released("walk_left") or Input.is_action_just_released("walk_right"):
+		no_move = 0
 
-	var changed_direction = false
+	no_move = max(no_move - delta, 0)
+	var changed_direction = no_move > 0
 
 	if Input.is_action_just_pressed("walk_left") and direction == Vector2.RIGHT:
 		changed_direction = true
+		no_move = NO_MOVE_FOR
 	if Input.is_action_just_pressed("walk_right") and direction == Vector2.LEFT:
 		changed_direction = true
+		no_move = NO_MOVE_FOR
 
 	if is_on_floor():
 		jumps = 1
@@ -82,13 +91,14 @@ func get_extents():
 
 func can_hit(ball: Node2D):
 	var dir = Vector2(ball.position.x - self.position.x, 0).normalized()
-	var extents = get_extents()
-
-	if dir != self.direction:
-		return false
+	var player_width = abs(extents[0].x) + abs(extents[1].x)
 
 	var distance = self.position.distance_to(ball.position)
-	if distance > 30:
+
+	if dir != self.direction and distance > (player_width * 0.5):
+		return false
+
+	if distance > (player_width * 1.25):
 		return false
 
 	if not is_on_floor():
@@ -111,7 +121,7 @@ func _process(delta):
 
 
 func _physics_process(delta):
-	get_input()
+	get_input(delta)
 	velocity.y += gravity * delta
 	velocity = move_and_slide(velocity, Vector2.UP)
 	$AnimatedSprite.flip_h = direction == Vector2.LEFT
