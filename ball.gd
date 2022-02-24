@@ -1,2 +1,1 @@
 extends RigidBody2D
-

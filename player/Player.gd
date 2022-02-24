@@ -1,8 +1,8 @@
 extends KinematicBody2D
 
-export (int) var speed = 200
-export (float) var acceleration = 0.5
-export (float) var friction = 0.5
+export(int) var speed = 200
+export(float) var acceleration = 0.5
+export(float) var friction = 0.5
 export(int) var jump_speed = -200
 export(int) var gravity = 800
 
@@ -21,12 +21,13 @@ var max_jumps = 2
 
 onready var extents = get_extents()
 
+
 func get_input():
 	var mod = 1
 	var dir = 0
-	
+
 	var changed_direction = false
-	
+
 	if Input.is_action_just_pressed("walk_left") and direction == Vector2.RIGHT:
 		changed_direction = true
 	if Input.is_action_just_pressed("walk_right") and direction == Vector2.LEFT:
@@ -43,7 +44,7 @@ func get_input():
 	if Input.is_action_pressed("walk_right"):
 		dir += mod
 		direction = Vector2.RIGHT
-		
+
 	if Input.is_action_pressed("walk_left"):
 		dir -= mod
 		direction = Vector2.LEFT
@@ -52,7 +53,7 @@ func get_input():
 		velocity.x = lerp(velocity.x, dir * speed, acceleration)
 	else:
 		velocity.x = lerp(velocity.x, 0, friction)
-		
+
 	if Input.is_action_just_released("swing"):
 		print("swing")
 		#swinging = true
@@ -61,13 +62,14 @@ func get_input():
 				var hit_direction = (direction + Vector2.UP) * swing_power
 				print(hit_direction)
 				ball.apply_central_impulse(hit_direction)
-				
+
 		swing_power = 0
+
 
 func get_extents():
 	var min_vec = Vector2.INF
 	var max_vec = Vector2.ZERO
-	
+
 	for vec in $CollisionPolygon2D.polygon:
 		min_vec.x = min(min_vec.x, vec.x)
 		min_vec.y = min(min_vec.y, vec.y)
@@ -77,28 +79,30 @@ func get_extents():
 
 	return [min_vec, max_vec]
 
+
 func can_hit(ball: Node2D):
 	var dir = Vector2(ball.position.x - self.position.x, 0).normalized()
 	var extents = get_extents()
-	
+
 	if dir != self.direction:
 		return false
 
 	var distance = self.position.distance_to(ball.position)
 	if distance > 30:
 		return false
-		
+
 	if not is_on_floor():
 		return false
 
 	return true
+
 
 func _process(delta):
 	if Input.is_action_pressed("swing"):
 		var swing_inc = max_swing_power / 1.5
 		swing_power = min(swing_power + (swing_inc * delta), max_swing_power)
 		print(swing_power)
-		
+
 	var club_rot = abs((back_swing / max_swing_power) * swing_power)
 	if direction == Vector2.RIGHT:
 		$Club.set_rotation(club_rot)
@@ -112,6 +116,6 @@ func _physics_process(delta):
 	velocity = move_and_slide(velocity, Vector2.UP)
 	$AnimatedSprite.flip_h = direction == Vector2.LEFT
 	if abs(velocity.x) >= 1:
-		$AnimatedSprite.animation = 'walk'
+		$AnimatedSprite.animation = "walk"
 	else:
-		$AnimatedSprite.animation = 'idle'
+		$AnimatedSprite.animation = "idle"
