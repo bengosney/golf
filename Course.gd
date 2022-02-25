@@ -2,18 +2,18 @@ extends TileMap
 
 signal init_level
 
+const BACKGROUND_LAYER = 1
+
 export(int) var level_seed: int = 0
 export(Vector2) var map_size: Vector2 = Vector2(80, 40)
 
-var level = 0
-onready var map = self
+export(int) var level: int = 1
 
 
 func _ready():
-	init_level()
+	init_level(self)
 
-
-func init_level():
+func init_level(map):
 	var noise = OpenSimplexNoise.new()
 
 	if level_seed == 0:
@@ -47,21 +47,19 @@ func init_level():
 
 		for i in range(max_height * 10):
 			if i >= height:
-				map.set_cell(x, i, 0)
+				map.set_cell(x, i, BACKGROUND_LAYER)
 
 		if x == map_size.x:
 			$Pin.position = map.map_to_world(Vector2(x, height)) - Vector2(0, map.cell_size.y / 2)
 
-	var map_cells = map.get_used_cells_by_id(0)
+	var map_cells = map.get_used_cells_by_id(BACKGROUND_LAYER)
 	for cell in map_cells:
 		if !map_cells.has(cell + Vector2.LEFT) and !map_cells.has(cell + Vector2.RIGHT):
-			map.set_cellv(cell + Vector2.RIGHT, 0)
+			map.set_cellv(cell + Vector2.RIGHT, BACKGROUND_LAYER)
 
 	map.update_dirty_quadrants()
 	map.update_bitmask_region()
 
 
 func _on_Pin_hit_pin():
-	level += 1
-	init_level()
 	emit_signal("init_level")

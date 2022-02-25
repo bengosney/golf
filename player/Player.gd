@@ -111,7 +111,6 @@ func _process(delta):
 	if Input.is_action_pressed("swing"):
 		var swing_inc = max_swing_power / 1.5
 		swing_power = min(swing_power + (swing_inc * delta), max_swing_power)
-		print(swing_power)
 
 	var club_rot = abs((back_swing / max_swing_power) * swing_power)
 	if direction == Vector2.RIGHT:
