@@ -13,6 +13,7 @@ export(int) var level: int = 1
 func _ready():
 	init_level(self)
 
+
 func init_level(map):
 	var noise = OpenSimplexNoise.new()
 

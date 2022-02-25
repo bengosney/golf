@@ -21,14 +21,15 @@ var back_swing = 2.35619
 var jumps = 1
 var max_jumps = 2
 
+var no_move = 0
+
 onready var extents = get_extents()
 
-var no_move = 0
 
 func get_input(delta):
 	var mod = 1
 	var dir = 0
-	
+
 	if Input.is_action_just_released("walk_left") or Input.is_action_just_released("walk_right"):
 		no_move = 0
 
