@@ -1,5 +1,7 @@
 extends KinematicBody2D
 
+signal hit_ball
+
 const NO_MOVE_FOR = 0.05
 
 export(int) var speed = 200
@@ -72,6 +74,7 @@ func get_input(delta):
 				var hit_direction = (direction + Vector2.UP) * swing_power
 				print(hit_direction)
 				ball.apply_central_impulse(hit_direction)
+				emit_signal("hit_ball")
 
 		swing_power = 0
 

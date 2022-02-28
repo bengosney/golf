@@ -9,6 +9,8 @@ export(Vector2) var map_size: Vector2 = Vector2(80, 40)
 
 export(int) var level: int = 1
 
+var _score: int = 0
+
 
 func _ready():
 	init_level(self)
@@ -64,3 +66,8 @@ func init_level(map):
 
 func _on_Pin_hit_pin():
 	emit_signal("init_level")
+
+
+func _on_Player_hit_ball():
+	_score += 1
+	$HUD.set_score(_score)
