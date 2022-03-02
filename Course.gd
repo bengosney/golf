@@ -53,7 +53,7 @@ func init_level(map):
 				map.set_cell(x, i, BACKGROUND_LAYER)
 
 		if x == map_size.x:
-			$Pin.position = map.map_to_world(Vector2(x, height)) - Vector2(0, map.cell_size.y / 2)
+			$Pin.position = map.map_to_world(Vector2(x, height)) + Vector2(map.cell_size.x / 2, 0)
 
 	var map_cells = map.get_used_cells_by_id(BACKGROUND_LAYER)
 	for cell in map_cells:
