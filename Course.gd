@@ -9,16 +9,32 @@ export(Vector2) var map_size: Vector2 = Vector2(80, 40)
 
 export(int) var level: int = 1
 
+var base_line = 5
+var max_height = 6
+var map = self
+
 var _score: int = 0
+
+var _max_x: int = 0
+var _min_x: int = INF
+
+onready var noise = OpenSimplexNoise.new()
 
 
 func _ready():
-	init_level(self)
+	init_level()
 
 
-func init_level(map):
-	var noise = OpenSimplexNoise.new()
+func set_map_col(x, y = 0):
+	var h = floor(noise.get_noise_2d(x, y) * max_height)
+	var height = base_line + h
+	for i in range(height, max_height * 10):
+		map.set_cell(x, i, BACKGROUND_LAYER)
 
+	return height
+
+
+func init_level():
 	if level_seed == 0:
 		level_seed = hash(OS.get_date())
 
@@ -32,25 +48,15 @@ func init_level(map):
 	var cell_size = map.cell_size
 	var map_extents = cell_size * map_size
 
-	var base_line = 5
-	var max_height = 6
-
 	var inc = TAU / map_size.x
 	var radius = map_size.x / 2
 
+	var y = 0
 	for x in range(-map_size.x, map_size.x * 2):
-		var rads = x * inc
+		_min_x = min(_min_x, x)
+		_max_x = max(_max_x, x)
 
-		var nx = radius * cos(rads)
-		var ny = radius * sin(rads)
-
-		var h = floor(noise.get_noise_2d(nx, ny) * max_height)
-
-		var height = base_line + h
-
-		for i in range(max_height * 10):
-			if i >= height:
-				map.set_cell(x, i, BACKGROUND_LAYER)
+		var height = set_map_col(x)
 
 		if x == map_size.x:
 			$Pin.position = map.map_to_world(Vector2(x, height)) + Vector2(map.cell_size.x / 2, 0)
@@ -62,6 +68,21 @@ func init_level(map):
 
 	map.update_dirty_quadrants()
 	map.update_bitmask_region()
+
+
+func _process(_delta):
+	var player_x = map.world_to_map($Player.position).x
+	var dist = _max_x - player_x
+	if dist < map_size.x:
+		var more = map_size.x - dist
+		for x in range(_max_x, _max_x + more):
+			set_map_col(x)
+
+		_max_x += more
+		#map.update_dirty_quadrants()
+		map.update_bitmask_region(
+			Vector2(_max_x - 1, base_line - 10), Vector2(_max_x + more, max_height + 10)
+		)
 
 
 func _on_Pin_hit_pin():
