@@ -16,7 +16,7 @@ var map = self
 var _score: int = 0
 
 var _max_x: int = 0
-var _min_x: int = INF
+var _min_x: int = 0
 
 onready var noise = OpenSimplexNoise.new()
 
@@ -72,6 +72,11 @@ func init_level():
 
 func _process(_delta):
 	var player_x = map.world_to_map($Player.position).x
+	_check_right(player_x)
+	_check_left(player_x)
+
+
+func _check_right(player_x):
 	var dist = _max_x - player_x
 	if dist < map_size.x:
 		var more = map_size.x - dist
@@ -79,10 +84,24 @@ func _process(_delta):
 			set_map_col(x)
 
 		_max_x += more
-		#map.update_dirty_quadrants()
-		map.update_bitmask_region(
-			Vector2(_max_x - 1, base_line - 10), Vector2(_max_x + more, max_height + 10)
-		)
+		var update_from = Vector2(_max_x - 1, base_line - 10)
+		var update_to = Vector2(_max_x + more, max_height + 10)
+		map.update_bitmask_region(update_from, update_to)
+
+
+func _check_left(player_x):
+	var dist = abs(_min_x - player_x)
+	if dist < map_size.x:
+		var more = map_size.x - dist
+		print("more: ", more)
+		for x in range(_min_x - more, _min_x):
+			set_map_col(x)
+
+		_min_x -= more
+		var update_from = Vector2(_min_x - more, base_line - 10)
+		var update_to = Vector2(_min_x + 1, max_height + 10)
+		print(update_from, ":", update_to)
+		map.update_bitmask_region(update_from, update_to)
 
 
 func _on_Pin_hit_pin():
